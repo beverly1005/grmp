@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>蜀韵·成都 - 成都文旅</title>
+    <style>
+        /* ===================== 全局样式重置 & 基础设置 ===================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+        }
+        html {
+            scroll-behavior: smooth; /* 全局平滑滚动 */
+        }
+        body {
+            color: #333333; /* 深灰正文 */
+            background-color: #fff;
+            line-height: 1.7;
+        }
+        :root {
+            --gold: #d4af37;         /* 主金色 */
+            --gold-light: #e6c860;   /* 浅金色hover */
+            --dark-gray: #333333;
+            --light-gray: #666666;
+            --bg-gray: #f8f7f2;
+            --transition: all 0.3s ease; /* 统一柔和过渡 */
+        }
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* ===================== 页头 Header 固定导航 ===================== */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: rgba(255,255,255,0.95);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+            z-index: 999;
+            padding: 1rem 0;
+        }
+        .header-wrap {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--dark-gray);
+        }
+        .logo span {
+            color: var(--gold);
+        }
+        nav ul {
+            display: flex;
+            gap: 2.2rem;
+            list-style: none;
+        }
+        nav a {
+            text-decoration: none;
+            color: var(--dark-gray);
+            font-size: 1rem;
+            transition: var(--transition);
+            padding: 4px 0;
+            position: relative;
+        }
+        /* 当前导航高亮金色 */
+        nav a.active {
+            color: var(--gold);
+        }
+        nav a:hover {
+            color: var(--gold-light);
+        }
+
+        /* ===================== 主体内容容器，给header留出高度 ===================== */
+        main {
+            margin-top: 70px;
+        }
+        /* 内容区块：默认隐藏，active才显示 */
+        .section-block {
+            display: none;
+            padding: 4rem 0;
+        }
+        .section-block.active {
+            display: block;
+        }
+        .section-title {
+            text-align: center;
+            font-size: 2rem;
+            color: var(--dark-gray);
+            margin-bottom: 3rem;
+            position: relative;
+        }
+        .section-title::after {
+            content: "";
+            display: block;
+            width: 60px;
+            height: 3px;
+            background-color: var(--gold);
+            margin: 10px auto 0;
+        }
+
+        /* ===================== 首页 - Banner全屏轮播 ===================== */
+        .banner {
+            width: 100%;
+            height: calc(100vh - 70px);
+            position: relative;
+            overflow: hidden;
+        }
+        .banner-item {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 0.8s ease;
+        }
+        .banner-item.active {
+            opacity: 1;
+        }
+        .banner-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .banner-mask {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.35);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .banner-slogan {
+            color: #fff;
+            font-size: 2.4rem;
+            letter-spacing: 6px;
+            text-align: center;
+        }
+        /* 轮播箭头 */
+        .banner-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 44px;
+            height: 44px;
+            background-color: rgba(255,255,255,0.25);
+            color: #fff;
+            border: none;
+            font-size: 22px;
+            cursor: pointer;
+            border-radius: 50%;
+            transition: var(--transition);
+            z-index: 10;
+        }
+        .banner-arrow:hover {
+            background-color: var(--gold);
+        }
+        .arrow-left { left: 30px; }
+        .arrow-right { right: 30px; }
+        /* 轮播圆点指示器 */
+        .banner-dots {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 12px;
+            z-index: 10;
+        }
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: rgba(255,255,255,0.4);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .dot.active {
+            background-color: var(--gold);
+        }
+
+        /* ===================== 首页 B站iframe视频模块 ===================== */
+        .video-wrap {
+            margin: 5rem 0;
+            text-align: center;
+        }
+        .video-wrap h3 {
+            font-size: 1.4rem;
+            margin-bottom: 1.5rem;
+            color: var(--dark-gray);
+        }
+        .video-wrap iframe {
+            width: 80%;
+            max-width: 800px;
+            height: 450px;
+            border-radius: 8px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+            border:0;
+        }
+        .intro-text {
+            width: 70%;
+            margin: 0 auto 4rem;
+            font-size: 1.05rem;
+            color: var(--light-gray);
+            text-align: center;
+            line-height: 2;
+        }
+
+        /* ===================== 卡片通用样式（美食、景点、文化共用） ===================== */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        .card {
+            background-color: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+            transition: var(--transition);
+        }
+        .card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+        }
+        .card img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+        }
+        .card-content {
+            padding: 1.2rem;
+        }
+        .card-content h4 {
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+            color: var(--gold);
+        }
+        .card-content p {
+            color: var(--light-gray);
+            font-size: 0.95rem;
+        }
+
+        /* ===================== 攻略区块 - 交通表格 ===================== */
+        .table-wrap {
+            width: 80%;
+            margin: 0 auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+        }
+        th {
+            background-color: var(--gold);
+            color: #fff;
+            padding: 14px;
+            font-weight: 500;
+        }
+        td {
+            padding: 14px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+        }
+        tr:hover {
+            background-color: #faf7eb;
+        }
+
+        /* ===================== 页脚 Footer ===================== */
+        footer {
+            background-color: #222;
+            color: #bbb;
+            text-align: center;
+            padding: 2.5rem 0;
+            margin-top: 2rem;
+        }
+        footer p {
+            margin-bottom: 6px;
+        }
+        footer .slogan {
+            color: var(--gold);
+            margin-bottom: 12px;
+        }
+
+        /* ===================== 响应式适配 ===================== */
+        @media (max-width:768px) {
+            nav ul {
+                gap: 1rem;
+            }
+            .banner-slogan {
+                font-size: 1.6rem;
+            }
+            .video-wrap iframe {
+                width: 95%;
+                height:260px;
+            }
+            .intro-text {
+                width: 90%;
+            }
+            .table-wrap {
+                width: 95%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ===================== 全局固定页头 Header ===================== -->
+    <header>
+        <div class="container header-wrap">
+            <div class="logo">
+                <span>蜀韵</span>·成都
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#home" class="nav-link active" data-target="home">首页</a></li>
+                    <li><a href="#food" class="nav-link" data-target="food">美食</a></li>
+                    <li><a href="#spot" class="nav-link" data-target="spot">景点</a></li>
+                    <li><a href="#culture" class="nav-link" data-target="culture">文化</a></li>
+                    <li><a href="#strategy" class="nav-link" data-target="strategy">攻略</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <!-- ===================== 首页区块 home（默认展示） ===================== -->
+        <section id="home" class="section-block active">
+            <div class="banner">
+                <div class="banner-item active">
+                    <img src="https://newbbs-fd.zol-img.com.cn/t_s1200x5000/g4/M08/0A/00/Cg-4y1UHCN-ISFhzAAmlzZDjHboAAW2ZAKrTCUACaXl441.jpg" alt="九寨沟">
+                    <div class="banner-mask">
+                        <div class="banner-slogan">一座来了就不想离开的城市</div>
+                    </div>
+                </div>
+                <div class="banner-item">
+                    <img src="https://you2.autoimg.cn/_autohomecar__zhouyouji/P15765688173223e6UiGkadclrBsfUWnSZxb.jpg?imageMogr2/thumbnail/750|watermark/2/text/5rG96L2m5LmL5a62/font/5b6u6L2v6ZuF6buR/fontsize/270/fill/I0ZGRkZGRg==" alt="火锅烟火">
+                    <div class="banner-mask">
+                        <div class="banner-slogan">天府之国，烟火成都</div>
+                    </div>
+                </div>
+                <div class="banner-item">
+                    <img src="https://x0.ifengimg.com/ucms/2020_49/CFA160F8160398370EF8263BA4A306B3D23E0AAE_w1080_h659.jpg" alt="杜甫草堂">
+                    <div class="banner-mask">
+                        <div class="banner-slogan">慢品人间烟火，闲观蜀中风华</div>
+                    </div>
+                </div>
+                <!-- 左右切换按钮 -->
+                <button class="banner-arrow arrow-left">&lt;</button>
+                <button class="banner-arrow arrow-right">&gt;</button>
+                <!-- 圆点指示器 -->
+                <div class="banner-dots">
+                    <span class="dot active"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                </div>
+            </div>
+
+   <div class="container">
+    <!-- B站iframe视频模块，替换原video标签 -->
+    <div class="video-wrap">
+        <h3>遇见成都</h3>
+        <iframe 
+            src="https://player.bilibili.com/player.html?isOutside=true&aid=800379637&bvid=BV1uy4y1q7WP&cid=262304283&p=1" 
+            scrolling="no" 
+            border="0" 
+            frameborder="no" 
+            framespacing="0" 
+            allowfullscreen="true"
+            width="720" 
+            height="405">
+        </iframe>
+    </div>
+    <!-- 成都简介 -->
+    <p class="intro-text">
+        成都，古称锦城，天府之国。千年文脉在此沉淀，市井烟火日夜不息。这里有憨态可掬的国宝熊猫，有青砖黛瓦的古巷老街，麻辣鲜香的川味美食，悠然闲适的慢生活，等待每一位旅人前来感受蜀地独有的温柔与热烈。
+    </p>
+</div>
+</section>
+
+
+
+        <!-- ===================== 美食区块 food ===================== -->
+        <section id="food" class="section-block">
+            <div class="container">
+                <h2 class="section-title">蜀味美食</h2>
+                <div class="card-grid">
+                    <div class="card">
+                        <img src="https://img95.699pic.com/photo/50140/6207.jpg_wh860.jpg" alt="成都火锅">
+                        <div class="card-content">
+                            <h4>成都火锅</h4>
+                            <p>牛油锅底醇厚香辣，毛肚鸭肠是经典，热辣滚烫，是成都最具代表性的味道。</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <img src="https://img95.699pic.com/photo/60014/4317.jpg_wh860.jpg" alt="担担面">
+                        <div class="card-content">
+                            <h4>担担面</h4>
+                            <p>面条劲道，酱汁咸香微辣，配上芽菜肉末，一口尝到地道川味小吃。</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <img src="https://ts2.tc.mm.bing.net/th/id/OIP-C.KkaBSYBm5_rH1VVotMoYJgHaEU?r=0&rs=1&pid=ImgDetMain&o=7&rm=3" alt="钟水饺">
+                        <div class="card-content">
+                            <h4>钟水饺</h4>
+                            <p>皮薄馅嫩，红油酱汁香甜微辣，甜辣交织，是老成都流传百年的小吃。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================== 景点区块 spot ===================== -->
+        <section id="spot" class="section-block">
+            <div class="container">
+                <h2 class="section-title">锦城胜景</h2>
+                <div class="card-grid">
+                    <div class="card">
+                        <img src="https://res.klook.com/image/upload/w_1265,h_791,c_fill,q_85/w_80,x_15,y_15,g_south_west,l_Klook_water_br_trans_yhcmh3/activities/pq50zxfjt8don26pv0gr.jpg" alt="大熊猫繁育基地">
+                        <div class="card-content">
+                            <h4>大熊猫繁育研究基地</h4>
+                            <p>国宝大熊猫家园，看圆滚滚熊猫吃笋嬉戏，是来成都必打卡之地。</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <img src="https://ts3.tc.mm.bing.net/th/id/OIP-C.wl27G3BlGMJUFU-5ck-PfAHaE8?r=0&rs=1&pid=ImgDetMain&o=7&rm=3" alt="宽窄巷子">
+                        <div class="card-content">
+                            <h4>宽窄巷子</h4>
+                            <p>清代古街巷，青砖灰瓦，茶馆、手作、小吃汇聚，感受老成都烟火。</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <img src="https://ts4.tc.mm.bing.net/th/id/OIP-C.PkjkOWqHY6AG3i77JvTHyQHaEK?r=0&rs=1&pid=ImgDetMain&o=7&rm=3" alt="武侯祠">
+                        <div class="card-content">
+                            <h4>武侯祠</h4>
+                            <p>纪念诸葛武侯，红墙竹影，三国文脉绵长，是国内知名三国文化圣地。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================== 文化区块 culture ===================== -->
+        <section id="culture" class="section-block">
+            <div class="container">
+                <h2 class="section-title">巴蜀文脉</h2>
+                <div class="card-grid">
+                    <div class="card">
+                        <img src="https://res.klook.com/images/fl_lossy.progressive,q_65/c_fill,w_1295,h_861/w_80,x_15,y_15,g_south_west,l_Klook_water_br_trans_yhcmh3/activities/m6xdzrjineaeabc0yphm/%E3%80%8A%E8%8A%99%E8%93%89%E5%9B%BD%E7%B2%B9%E3%80%8B%E5%8F%98%E8%84%B8%E5%B7%9D%E5%89%A7%EF%BC%88%E8%B5%A0%E7%9B%96%E7%A2%97%E8%8C%B6%EF%BC%89.jpg" alt="川剧变脸">
+                        <div class="card-content">
+                            <h4>川剧变脸</h4>
+                            <p>川剧绝活，瞬息变换脸谱，神秘精彩，是巴蜀戏曲里最亮眼的符号。</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <img src="https://ts2.tc.mm.bing.net/th/id/OIP-C.i1VQz-F4fIFr0c5tlMrtmgHaG1?r=0&rs=1&pid=ImgDetMain&o=7&rm=3" alt="蜀绣">
+                        <div class="card-content">
+                            <h4>蜀绣</h4>
+                            <p>中国四大名绣之一，针法细腻，色彩雅致，一针一线承载千年蜀艺。</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <img src="https://gd-hbimg.huaban.com/3bc858770b8edd677c2ea5b1fb797492af17480c32254-rVGo7K_fw658" alt="盖碗茶">
+                        <div class="card-content">
+                            <h4>盖碗茶文化</h4>
+                            <p>老成都茶馆文化，一盖碗茶，慢坐闲谈，藏着成都悠闲的生活哲学。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===================== 攻略区块 strategy ===================== -->
+        <section id="strategy" class="section-block">
+            <div class="container">
+                <h2 class="section-title">出行攻略</h2>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>交通方式</th>
+                                <th>耗时</th>
+                                <th>费用</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>地铁</td>
+                                <td>覆盖全城</td>
+                                <td>¥3-12</td>
+                            </tr>
+                            <tr>
+                                <td>出租车</td>
+                                <td>视距离</td>
+                                <td>¥15-60</td>
+                            </tr>
+                            <tr>
+                                <td>景区直通车</td>
+                                <td>1-1.5h</td>
+                                <td>¥25-35</td>
+                            </tr>
+                            <tr>
+                                <td>共享单车</td>
+                                <td>短途</td>
+                                <td>¥2-5</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ===================== 全局页脚 Footer ===================== -->
+    <footer>
+        <div class="container">
+            <p class="slogan">蜀韵成都 · 静待君至</p>
+            <p>© 2026 蜀韵·成都 文旅宣传站 | 现代轻国风文旅单页</p>
+        </div>
+    </footer>
+
+    <script>
+        // ===================== 1. 导航区块切换逻辑 =====================
+        const navLinks = document.querySelectorAll('.nav-link');
+        const sectionBlocks = document.querySelectorAll('.section-block');
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                // 获取目标区块id
+                const targetId = this.dataset.target;
+                // 移除所有导航高亮
+                navLinks.forEach(item => item.classList.remove('active'));
+                // 当前点击导航高亮
+                this.classList.add('active');
+                // 隐藏所有区块
+                sectionBlocks.forEach(block => block.classList.remove('active'));
+                // 展示目标区块
+                document.getElementById(targetId).classList.add('active');
+            })
+        })
+
+        // ===================== 2. Banner轮播逻辑 =====================
+        const bannerItems = document.querySelectorAll('.banner-item');
+        const dots = document.querySelectorAll('.dot');
+        const arrowLeft = document.querySelector('.arrow-left');
+        const arrowRight = document.querySelector('.arrow-right');
+        let currentIndex = 0;
+        let timer;
+
+        // 切换轮播
+        function switchBanner(index) {
+            // 边界处理
+            if(index < 0) index = bannerItems.length - 1;
+            if(index >= bannerItems.length) index = 0;
+            currentIndex = index;
+            // 清除激活
+            bannerItems.forEach(item => item.classList.remove('active'));
+            dots.forEach(dot => dot.classList.remove('active'));
+            // 设置当前激活
+            bannerItems[currentIndex].classList.add('active');
+            dots[currentIndex].classList.add('active');
+        }
+
+        // 自动播放
+        function startAutoPlay() {
+            timer = setInterval(()=>{
+                switchBanner(currentIndex + 1);
+            },4000);
+        }
+        // 停止自动播放
+        function stopAutoPlay() {
+            clearInterval(timer);
+        }
+
+        // 左右箭头点击
+        arrowRight.addEventListener('click', ()=>{
+            stopAutoPlay();
+            switchBanner(currentIndex + 1);
+            startAutoPlay();
+        })
+        arrowLeft.addEventListener('click', ()=>{
+            stopAutoPlay();
+            switchBanner(currentIndex - 1);
+            startAutoPlay();
+        })
+
+        // 圆点点击切换
+        dots.forEach((dot,idx)=>{
+            dot.addEventListener('click',()=>{
+                stopAutoPlay();
+                switchBanner(idx);
+                startAutoPlay();
+            })
+        })
+
+        // 鼠标悬浮轮播区域停止播放，离开继续
+        const bannerWrap = document.querySelector('.banner');
+        bannerWrap.addEventListener('mouseenter', stopAutoPlay);
+        bannerWrap.addEventListener('mouseleave', startAutoPlay);
+
+        // 初始化启动轮播
+        startAutoPlay();
+    </script>
+</body>
+</html>
